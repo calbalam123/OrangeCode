@@ -29,6 +29,13 @@ def translate(source: str) -> str:
             if indent < 0:
                 raise SyntaxError(f"{line_no}행: 닫는 중괄호가 너무 많습니다.")
             continue
+        if line == "} 아니면 {":
+            indent -= 1
+            if indent < 0:
+                raise SyntaxError(f"{line_no}행: 닫는 중괄호가 너무 많습니다.")
+            output.append("    " * indent + "else:")
+            indent += 1
+            continue
 
         statement = None
         match = re.fullmatch(r"만약\s+(.+?)\s+라면\s*\{", line)
