@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install VSCE
+      - name: Run runtime tests\n        run: python -m unittest discover -s tests -v\n      - name: Install VSCE
         run: npm install --global @vscode/vsce
       - name: Package extension
         working-directory: vscode-extension
