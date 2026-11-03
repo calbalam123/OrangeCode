@@ -1,0 +1,36 @@
+name: Orange Code Native build
+
+on:
+  push:
+    branches: [advanced-native]
+    paths:
+      - "native/**"
+      - ".github/workflows/build-native.yml"
+  workflow_dispatch:
+
+jobs:
+  windows-native:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native
+
+      - name: Run tests
+        run: cargo test --manifest-path native/Cargo.toml
+
+      - name: Build release executable
+        run: cargo build --release --manifest-path native/Cargo.toml
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: orange-code-native-windows
+          path: native/target/release/orange.exe
