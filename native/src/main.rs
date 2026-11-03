@@ -263,6 +263,23 @@ mod tests {
     }
 
     #[test]
+    fn parser_accepts_console_input_and_file_io() {
+        let source = "입력받기 사용자 \"이름을 입력하세요\"\n파일에쓰기 \"sample.txt\" \"저장 내용\"\n파일읽기 다시읽기 \"sample.txt\"";
+        let program = Parser::new(lex(source).unwrap()).parse().unwrap();
+        assert_eq!(program.len(), 3);
+        assert!(matches!(program[0], Stmt::Input(_, _)));
+        assert!(matches!(program[1], Stmt::WriteFile(_, _)));
+        assert!(matches!(program[2], Stmt::ReadFile(_, _)));
+    }
+
+    #[test]
+    fn parser_accepts_loop_control_commands() {
+        let source = "반복하기 3번 {\n중단\n}";
+        let program = Parser::new(lex(source).unwrap()).parse().unwrap();
+        assert!(matches!(program.first(), Some(Stmt::Repeat(_, _))));
+    }
+
+    #[test]
     fn parser_accepts_korean_gui_syntax() {
         let source = "창 만들기 \"테스트\" {\n너비 640\n높이 480\n글자 \"안녕\"\n버튼 \"확인\" 클릭하면 {\n출력하기(\"클릭\")\n}\n}";
         let program = Parser::new(lex(source).unwrap()).parse().unwrap();
