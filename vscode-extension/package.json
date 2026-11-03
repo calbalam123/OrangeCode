@@ -1,8 +1,8 @@
 {
   "name": "orange-code",
   "displayName": "Orange Code 한국어",
-  "description": "Python의 문법과 내장 함수를 한국어 키워드로 작성하고 실행·디버깅하는 Orange Code",
-  "version": "2.4.0",
+  "description": "한국어 문법 강조, UTF-8 실행 및 VS Code 디버깅을 지원하는 Orange Code",
+  "version": "2.4.1",
   "publisher": "orange-code-community",
   "license": "MIT",
   "engines": {
