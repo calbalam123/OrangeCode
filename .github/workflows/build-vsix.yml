@@ -25,6 +25,8 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Sync latest runtime into extension
         run: cp runtime/orange.py vscode-extension/runtime/orange.py
+      - name: Sync runtime into extension
+        run: cp runtime/orange.py vscode-extension/runtime/orange.py
       - name: Install VSCE
         run: npm install --global @vscode/vsce
       - name: Package extension
