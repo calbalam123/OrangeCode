@@ -1,8 +1,8 @@
 {
   "name": "orange-code",
   "displayName": "Orange Code 한국어",
-  "description": "한국어 프로그래밍 언어 오렌지코드 문법 강조와 실행 기능",
-  "version": "1.0.0",
+  "description": "한국어 네이티브 프로그래밍 언어 오렌지코드 문법 강조와 실행 기능",
+  "version": "2.0.0",
   "publisher": "orange-code-community",
   "license": "MIT",
   "engines": { "vscode": "^1.80.0" },
@@ -34,6 +34,16 @@
       "language": "orange",
       "path": "./snippets/orange.code-snippets"
     }]
+  },
+  "configuration": {
+    "title": "Orange Code",
+    "properties": {
+      "orange.executablePath": {
+        "type": "string",
+        "default": "orange",
+        "description": "Orange Code 네이티브 실행 파일 경로. PATH에 등록했다면 기본값 orange를 사용합니다."
+      }
+    }
   },
   "scripts": {
     "package": "vsce package"
