@@ -1,8 +1,8 @@
 {
   "name": "orange-code",
   "displayName": "Orange Code 한국어",
-  "description": "한국어 프로그래밍 언어 오렌지코드 문법 강조와 실행 기능",
-  "version": "1.0.0",
+  "description": "Python의 문법과 내장 함수를 한국어 키워드로 작성하고 실행하는 Orange Code",
+  "version": "2.3.0",
   "publisher": "orange-code-community",
   "license": "MIT",
   "engines": { "vscode": "^1.80.0" },
@@ -21,24 +21,17 @@
       "scopeName": "source.orange",
       "path": "./syntaxes/orange.tmLanguage.json"
     }],
-    "commands": [{
-      "command": "orange.runFile",
-      "title": "Orange Code: Run File"
-    }],
-    "keybindings": [{
-      "command": "orange.runFile",
-      "key": "ctrl+shift+f5",
-      "when": "editorLangId == orange"
-    }],
-    "snippets": [{
-      "language": "orange",
-      "path": "./snippets/orange.code-snippets"
-    }]
+    "commands": [
+      {"command":"orange.runFile","title":"Orange Code: Run File"},
+      {"command":"orange.translateFile","title":"Orange Code: 파이썬 코드로 변환"},
+      {"command":"orange.createFile","title":"Orange Code: 새 파일 만들기"}
+    ],
+    "keybindings": [
+      {"command":"orange.runFile","key":"ctrl+shift+f5","when":"editorLangId == orange"},
+      {"command":"orange.translateFile","key":"ctrl+alt+t","when":"editorLangId == orange"}
+    ],
+    "snippets": [{"language":"orange","path":"./snippets/orange.code-snippets"}]
   },
-  "scripts": {
-    "package": "vsce package"
-  },
-  "devDependencies": {
-    "@vscode/vsce": "^3.2.1"
-  }
+  "scripts": {"package":"vsce package"},
+  "devDependencies": {"@vscode/vsce":"^3.2.1"}
 }
