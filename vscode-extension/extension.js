@@ -15,8 +15,8 @@ function activate(context) {
     await file.save();
     const runtime = runtimePath(context);
     if (!fs.existsSync(runtime)) return vscode.window.showErrorMessage("Orange Code 실행기를 찾을 수 없습니다.");
-    const terminal = vscode.window.createTerminal({ name: "Orange Code" });
-    const py = process.platform === "win32" ? "py -3" : "python3";
+    const terminal = vscode.window.createTerminal({ name: "Orange Code", env: { PYTHONUTF8: "1", PYTHONIOENCODING: "utf-8" } });
+    const py = process.platform === "win32" ? "py -3 -X utf8" : "python3 -X utf8";
     terminal.show(true);
     terminal.sendText(py + " " + quote(runtime) + " " + quote(file.fileName));
   });
@@ -35,8 +35,8 @@ function activate(context) {
     const sourceFile = editor.document.fileName;
     const debugFile = sourceFile.replace(/\.orange$/i, ".orange.debug.py");
     const python = process.platform === "win32" ? "py" : "python3";
-    const args = process.platform === "win32" ? ["-3", runtime, "--translate", sourceFile] : [runtime, "--translate", sourceFile];
-    cp.execFile(python, args, { encoding: "utf8" }, async (error, stdout, stderr) => {
+    const args = process.platform === "win32" ? ["-3", "-X", "utf8", runtime, "--translate", sourceFile] : ["-X", "utf8", runtime, "--translate", sourceFile];
+    cp.execFile(python, args, { encoding: "utf8", env: { ...process.env, PYTHONUTF8: "1", PYTHONIOENCODING: "utf-8" } }, async (error, stdout, stderr) => {
       if (error) return vscode.window.showErrorMessage(stderr || error.message);
       try {
         fs.writeFileSync(debugFile, stdout, "utf8");
@@ -55,8 +55,8 @@ function activate(context) {
     await editor.document.save();
     const runtime = runtimePath(context);
     const py = process.platform === "win32" ? "py" : "python3";
-    const args = process.platform === "win32" ? ["-3",runtime,"--translate",editor.document.fileName] : [runtime,"--translate",editor.document.fileName];
-    cp.execFile(py,args,{encoding:"utf8"},(error,stdout,stderr)=>{
+    const args = process.platform === "win32" ? ["-3","-X","utf8",runtime,"--translate",editor.document.fileName] : ["-X","utf8",runtime,"--translate",editor.document.fileName];
+    cp.execFile(py,args,{encoding:"utf8",env:{...process.env,PYTHONUTF8:"1",PYTHONIOENCODING:"utf-8"}},(error,stdout,stderr)=>{
       if(error) return vscode.window.showErrorMessage(stderr || error.message);
       const out = editor.document.fileName.replace(/\.orange$/i,".py");
       fs.writeFileSync(out,stdout,"utf8");
