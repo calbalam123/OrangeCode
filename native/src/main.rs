@@ -1,5 +1,5 @@
 use eframe::egui;
-use std::{collections::HashMap, env, fs, path::PathBuf};
+use std::{collections::HashMap, env, fs, io::{self, Write}, path::PathBuf};
 
 #[derive(Debug, Clone, PartialEq)]
 enum TokenKind { Ident, Number, String, Symbol, Eof }
@@ -69,6 +69,7 @@ enum Stmt {
     Let(String, Expr), Print(Expr), If(Expr, Vec<Stmt>, Vec<Stmt>),
     While(Expr, Vec<Stmt>), Repeat(Expr, Vec<Stmt>), Break, Continue,
     Window(String, usize, usize, Vec<Widget>),
+    Input(String, String), WriteFile(Expr, Expr), ReadFile(String, Expr),
 }
 
 struct Parser { tokens: Vec<Token>, pos: usize }
@@ -106,6 +107,9 @@ impl Parser {
         if self.check("반복하기") {
             self.advance(); let count=self.expression(0)?; self.expect("번")?; return Ok(Stmt::Repeat(count,self.block()?));
         }
+        if self.check("입력받기") { self.advance(); let name=self.identifier()?; let prompt=self.advance(); if prompt.kind!=TokenKind::String{return Err("입력받기 뒤에는 안내 문구가 필요합니다.".into());} return Ok(Stmt::Input(name,prompt.text)); }
+        if self.check("파일에쓰기") { self.advance(); let path=self.expression(0)?; let value=self.expression(0)?; return Ok(Stmt::WriteFile(path,value)); }
+        if self.check("파일읽기") { self.advance(); let name=self.identifier()?; let path=self.expression(0)?; return Ok(Stmt::ReadFile(name,path)); }
         if self.check("중단") { self.advance(); return Ok(Stmt::Break); }
         if self.check("계속") { self.advance(); return Ok(Stmt::Continue); }
         if self.check("창") {
@@ -162,8 +166,10 @@ impl Value {
     fn truthy(&self)->bool { match self { Value::Bool(v)=>*v, Value::Number(n)=>*n!=0.0, Value::Text(s)=>!s.is_empty(), Value::Null=>false } }
     fn show(&self)->String { match self { Value::Number(n)=>if n.fract()==0.0 {format!("{}",*n as i64)} else {n.to_string()}, Value::Text(s)=>s.clone(), Value::Bool(b)=>if *b {"참".into()} else {"거짓".into()}, Value::Null=>"없음".into() } }
 }
+#[derive(Clone, Copy, PartialEq)]
+enum LoopSignal { Break, Continue }
 #[derive(Clone,Default)]
-struct Interpreter { vars: HashMap<String,Value> }
+struct Interpreter { vars: HashMap<String,Value>, signal: Option<LoopSignal> }
 impl Interpreter {
     fn eval(&self,e:&Expr)->Result<Value,String>{
         match e {
@@ -183,11 +189,17 @@ impl Interpreter {
         }
     }
     fn execute(&mut self,body:&[Stmt])->Result<(),String>{
-        for stmt in body { match stmt {
+        for stmt in body { if self.signal.is_some(){break;} match stmt {
             Stmt::Let(n,e)=>{self.vars.insert(n.clone(),self.eval(e)?);},
             Stmt::Print(e)=>println!("{}",self.eval(e)?.show()),
             Stmt::If(c,a,b)=>{if self.eval(c)?.truthy(){self.execute(a)?}else{self.execute(b)?}},
-            Stmt::While(c,b)=>{let mut guard=0;while self.eval(c)?.truthy(){guard+=1;if guard>1_000_000{return Err("반복 횟수 제한을 초과했습니다.".into())}self.execute(b)?;}},
+            Stmt::Input(name,prompt)=>{print!("{prompt} ");io::stdout().flush().map_err(|e|e.to_string())?;let mut line=String::new();io::stdin().read_line(&mut line).map_err(|e|e.to_string())?;self.vars.insert(name.clone(),Value::Text(line.trim_end().to_string()));},
+            Stmt::WriteFile(path,value)=>{let p=self.eval(path)?.show();let v=self.eval(value)?.show();fs::write(&p,v).map_err(|e|format!("파일 저장 실패: {e}"))?;},
+            Stmt::ReadFile(name,path)=>{let p=self.eval(path)?.show();let v=fs::read_to_string(&p).map_err(|e|format!("파일 읽기 실패: {e}"))?;self.vars.insert(name.clone(),Value::Text(v));},
+            Stmt::While(c,b)=>{let mut guard=0;while self.eval(c)?.truthy(){guard+=1;if guard>1_000_000{return Err("반복 횟수 제한을 초과했습니다.".into())}self.execute(b)?;match self.signal.take(){Some(LoopSignal::Break)=>break,Some(LoopSignal::Continue)=>continue,None=>()}}},
+            Stmt::Repeat(e,b)=>{let count=self.eval(e)?;let n=if let Value::Number(v)=count{v.max(0.0).min(1_000_000.0) as usize}else{return Err("반복 횟수는 숫자여야 합니다.".into())};for _ in 0..n{self.execute(b)?;match self.signal.take(){Some(LoopSignal::Break)=>break,Some(LoopSignal::Continue)=>continue,None=>()}}},
+            Stmt::Break=>self.signal=Some(LoopSignal::Break),
+            Stmt::Continue=>self.signal=Some(LoopSignal::Continue),
             Stmt::Repeat(e,b)=>{let count=self.eval(e)?;let n=if let Value::Number(v)=count{v.max(0.0).min(1_000_000.0) as usize}else{return Err("반복 횟수는 숫자여야 합니다.".into())};for _ in 0..n{self.execute(b)?;}},
             Stmt::Break|Stmt::Continue=>return Err("중단/계속은 다음 엔진 업데이트에서 지원됩니다.".into()),
             Stmt::Window(title,w,h,widgets)=>{let app=OrangeGui{title:title.clone(),width:*w,height:*h,widgets:widgets.clone(),interpreter:self.clone()};let options=eframe::NativeOptions{viewport:egui::ViewportBuilder::default().with_inner_size([*w as f32,*h as f32]),..Default::default()};eframe::run_native(title,options,Box::new(|_|Ok(Box::new(app)))).map_err(|e|format!("GUI 실행 실패: {e}"))?;}
