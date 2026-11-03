@@ -5,6 +5,6 @@ if "%~1"=="" (
   pause
   exit /b 1
 )
-"%~dp0..\native\target\release\orange.exe" "%~1"
+"%~dp0orange.exe" "%~1"
 echo.
 pause
