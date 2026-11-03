@@ -1,39 +1,60 @@
 {
   "name": "orange-code",
   "displayName": "Orange Code 한국어",
-  "description": "한국어 네이티브 프로그래밍 언어 오렌지코드 문법 강조와 실행 기능",
-  "version": "2.0.0",
+  "description": "한국어 네이티브 프로그래밍 언어 오렌지코드 문법 강조, 자동완성, 독립 실행 기능",
+  "version": "2.1.0",
   "publisher": "orange-code-community",
   "license": "MIT",
-  "engines": { "vscode": "^1.80.0" },
-  "categories": ["Programming Languages"],
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
   "main": "./extension.js",
-  "activationEvents": ["onLanguage:orange"],
+  "activationEvents": [
+    "onLanguage:orange"
+  ],
   "contributes": {
-    "languages": [{
-      "id": "orange",
-      "aliases": ["Orange Code", "오렌지코드"],
-      "extensions": [".orange"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "orange",
-      "scopeName": "source.orange",
-      "path": "./syntaxes/orange.tmLanguage.json"
-    }],
-    "commands": [{
-      "command": "orange.runFile",
-      "title": "Orange Code: Run File"
-    }],
-    "keybindings": [{
-      "command": "orange.runFile",
-      "key": "ctrl+shift+f5",
-      "when": "editorLangId == orange"
-    }],
-    "snippets": [{
-      "language": "orange",
-      "path": "./snippets/orange.code-snippets"
-    }]
+    "languages": [
+      {
+        "id": "orange",
+        "aliases": [
+          "Orange Code",
+          "오렌지코드"
+        ],
+        "extensions": [
+          ".orange"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "orange",
+        "scopeName": "source.orange",
+        "path": "./syntaxes/orange.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "orange.runFile",
+        "title": "Orange Code: Run File"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "orange.runFile",
+        "key": "ctrl+shift+f5",
+        "when": "editorLangId == orange"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "orange",
+        "path": "./snippets/orange.code-snippets"
+      }
+    ]
   },
   "configuration": {
     "title": "Orange Code",
