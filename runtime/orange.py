@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
-"""Orange Code 2.4.0 - Korean aliases for Python."""
+"""Orange Code 2.4.1 - Korean aliases for Python."""
 from __future__ import annotations
 import argparse, builtins, io, re, sys, tokenize
 from pathlib import Path
-VERSION = "2.4.0"
+
+# Keep Korean text readable on Windows consoles and VS Code terminals.
+for _stream in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except (OSError, ValueError):
+            pass
+VERSION = "2.4.1"
 NAME_MAP = {
 "만약":"if","아니면":"else","아니면만약":"elif","반복":"for","동안":"while","함수":"def","클래스":"class","반환":"return",
 "가져오기":"import","에서":"from","별칭":"as","시도":"try","예외":"except","마지막으로":"finally","발생":"raise","확인":"assert",
