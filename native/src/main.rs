@@ -63,7 +63,7 @@ fn lex(source: &str) -> Result<Vec<Token>, String> {
 #[derive(Debug, Clone)]
 enum Expr { Number(f64), Text(String), Bool(bool), Variable(String), Unary(String, Box<Expr>), Binary(Box<Expr>, String, Box<Expr>) }
 #[derive(Debug, Clone)]
-enum Widget { Label(String), Button { label: String, action: Vec<Stmt> } }
+enum Widget { Label(String), TextInput { name: String, placeholder: String }, Checkbox { name: String, label: String }, Button { label: String, action: Vec<Stmt> } }
 #[derive(Debug, Clone)]
 enum Stmt {
     Let(String, Expr), Print(Expr), If(Expr, Vec<Stmt>, Vec<Stmt>),
@@ -120,6 +120,8 @@ impl Parser {
                 if self.check("너비") { self.advance(); width=self.advance().text.parse().map_err(|_|"너비는 숫자여야 합니다.")?; }
                 else if self.check("높이") { self.advance(); height=self.advance().text.parse().map_err(|_|"높이는 숫자여야 합니다.")?; }
                 else if self.check("글자") { self.advance(); let t=self.advance(); if t.kind!=TokenKind::String{return Err("글자 뒤에는 문자열이 필요합니다.".into());} widgets.push(Widget::Label(t.text)); }
+                else if self.check("입력칸") { self.advance(); let name=self.identifier()?; let t=self.advance(); if t.kind!=TokenKind::String{return Err("입력칸 뒤에는 안내 문구가 필요합니다.".into());} widgets.push(Widget::TextInput{name,placeholder:t.text}); }
+                else if self.check("체크상자") { self.advance(); let name=self.identifier()?; let t=self.advance(); if t.kind!=TokenKind::String{return Err("체크상자 뒤에는 설명이 필요합니다.".into());} widgets.push(Widget::Checkbox{name,label:t.text}); }
                 else if self.check("버튼") {
                     self.advance(); let t=self.advance(); if t.kind!=TokenKind::String{return Err("버튼 뒤에는 문자열이 필요합니다.".into());}
                     let action=if self.check("클릭하면") { self.advance(); self.block()? } else { Vec::new() };
@@ -214,6 +216,15 @@ impl eframe::App for OrangeGui {
             for widget in &self.widgets {
                 match widget {
                     Widget::Label(s)=>{ui.label(s);}
+                    Widget::TextInput{name,placeholder}=>{
+                        ui.label(placeholder);
+                        let value=self.interpreter.vars.entry(name.clone()).or_insert_with(||Value::Text(String::new()));
+                        if let Value::Text(text)=value { ui.text_edit_singleline(text); }
+                    }
+                    Widget::Checkbox{name,label}=>{
+                        let value=self.interpreter.vars.entry(name.clone()).or_insert(Value::Bool(false));
+                        if let Value::Bool(checked)=value { ui.checkbox(checked,label); }
+                    }
                     Widget::Button{label,action}=>{if ui.button(label).clicked(){if let Err(e)=self.interpreter.execute(action){eprintln!("[오렌지코드 오류] {e}");}}}
                 }
                 ui.add_space(6.0);
