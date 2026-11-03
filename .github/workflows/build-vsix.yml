@@ -4,7 +4,9 @@ on:
   push:
     branches: [main]
     paths:
+      - "runtime/**"
       - "vscode-extension/**"
+      - "tests/**"
       - ".github/workflows/build-vsix.yml"
   workflow_dispatch:
 
@@ -13,11 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Run runtime tests
         run: python -m unittest discover -s tests -v
+      - name: Sync latest runtime into extension
+        run: cp runtime/orange.py vscode-extension/runtime/orange.py
       - name: Install VSCE
         run: npm install --global @vscode/vsce
       - name: Package extension
