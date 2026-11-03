@@ -200,8 +200,6 @@ impl Interpreter {
             Stmt::Repeat(e,b)=>{let count=self.eval(e)?;let n=if let Value::Number(v)=count{v.max(0.0).min(1_000_000.0) as usize}else{return Err("반복 횟수는 숫자여야 합니다.".into())};for _ in 0..n{self.execute(b)?;match self.signal.take(){Some(LoopSignal::Break)=>break,Some(LoopSignal::Continue)=>continue,None=>()}}},
             Stmt::Break=>self.signal=Some(LoopSignal::Break),
             Stmt::Continue=>self.signal=Some(LoopSignal::Continue),
-            Stmt::Repeat(e,b)=>{let count=self.eval(e)?;let n=if let Value::Number(v)=count{v.max(0.0).min(1_000_000.0) as usize}else{return Err("반복 횟수는 숫자여야 합니다.".into())};for _ in 0..n{self.execute(b)?;}},
-            Stmt::Break|Stmt::Continue=>return Err("중단/계속은 다음 엔진 업데이트에서 지원됩니다.".into()),
             Stmt::Window(title,w,h,widgets)=>{let app=OrangeGui{title:title.clone(),width:*w,height:*h,widgets:widgets.clone(),interpreter:self.clone()};let options=eframe::NativeOptions{viewport:egui::ViewportBuilder::default().with_inner_size([*w as f32,*h as f32]),..Default::default()};eframe::run_native(title,options,Box::new(|_|Ok(Box::new(app)))).map_err(|e|format!("GUI 실행 실패: {e}"))?;}
         }} Ok(())
     }
