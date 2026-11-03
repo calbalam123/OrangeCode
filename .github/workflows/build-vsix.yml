@@ -2,7 +2,7 @@ name: Build VS Code extension
 
 on:
   push:
-    branches: [main]
+    branches: [main, advanced-native]
     paths:
       - "vscode-extension/**"
       - ".github/workflows/build-vsix.yml"
