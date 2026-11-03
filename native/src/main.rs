@@ -126,7 +126,7 @@ impl Parser {
                     self.advance(); let t=self.advance(); if t.kind!=TokenKind::String{return Err("버튼 뒤에는 문자열이 필요합니다.".into());}
                     let action=if self.check("클릭하면") { self.advance(); self.block()? } else { Vec::new() };
                     widgets.push(Widget::Button{label:t.text,action});
-                } else { let t=self.current(); return Err(format!("{}행 {}열: GUI 안에서는 너비, 높이, 글자, 버튼만 사용할 수 있습니다.",t.line,t.col)); }
+                } else { let t=self.current(); return Err(format!("{}행 {}열: GUI 안에서는 너비, 높이, 글자, 입력칸, 체크상자, 버튼만 사용할 수 있습니다.",t.line,t.col)); }
             }
             self.expect("}")?; return Ok(Stmt::Window(title.text,width,height,widgets));
         }
