@@ -1,60 +1,53 @@
 # Orange Code Native 2.0
 
-Orange Code Native는 Python으로 소스를 변환하지 않는 독립 실행형 한국어 프로그래밍 언어 구현입니다.
-
-## 기술 구성
-- Rust로 작성한 네이티브 실행기
-- 자체 Lexer(어휘 분석기), Parser(재귀 하향 구문 분석기), AST, Interpreter
-- eframe 기반 데스크톱 GUI
-- 소스 확장자: `.orange`
+Python 소스 변환 없이 Orange Code 코드를 자체 Lexer, Parser, AST, Interpreter로 실행하는 독립형 한국어 프로그래밍 언어입니다.
 
 ## 빌드
-Rust stable 도구 모음을 설치한 뒤 `native` 폴더에서 실행합니다.
-
+Rust stable을 설치한 뒤 이 폴더에서:
 ```powershell
 cargo build --release
+cargo test
 ```
+Windows 실행 파일은 `target\release\orange.exe`입니다.
 
-실행 파일:
-- Windows: `target\release\orange.exe`
-- Linux/macOS: `target/release/orange`
-
-## 실행
+## 실행 예제
 ```powershell
 cargo run --release -- examples/hello.orange
 cargo run --release -- examples/window.orange
+cargo run --release -- examples/input_file.orange
+cargo run --release -- examples/loop_control.orange
 ```
 
-## 기본 문법
+## 콘솔 입력 및 파일
 ```orange
-변수 이름 = "오렌지"
-변수 합계 = 10 + 20
-출력하기("안녕, " + 이름)
-
-만약 합계 >= 30 {
-    출력하기("조건이 참입니다.")
-} 아니면 {
-    출력하기("조건이 거짓입니다.")
-}
-
-반복하기 3번 {
-    출력하기("반복 실행")
-}
+입력받기 이름 "이름을 입력하세요:"
+파일에쓰기 "name.txt" 이름
+파일읽기 저장된이름 "name.txt"
+출력하기(저장된이름)
 ```
 
-## GUI 문법
+## 반복문 제어
+```orange
+반복하기 5번 {
+    출력하기("반복")
+    중단
+}
+```
+`중단`은 반복문을 끝내며 `계속`은 현재 반복의 남은 문장을 건너뜁니다.
+
+## GUI
 ```orange
 창 만들기 "내 프로그램" {
     너비 720
     높이 460
-    글자 "첫 번째 네이티브 창"
+    글자 "안녕하세요"
     버튼 "확인" 클릭하면 {
-        출력하기("버튼을 눌렀습니다.")
+        출력하기("버튼 클릭")
     }
 }
 ```
 
 ## 지원 상태
-현재 2.0 개발 첫 단계입니다. 변수, 숫자/문자열/논리값, 사칙연산, 비교/논리 연산, 조건문, 반복문, 출력, 기본 데스크톱 GUI 위젯을 구현했습니다. 함수, 배열, 모듈, 파일/네트워크/데이터베이스 표준 라이브러리, 정적 타입 검사, 네이티브 기계어 컴파일은 이후 단계입니다.
+구현 단계: 변수, 출력, 숫자/문자열/논리값, 연산, 조건문, 반복문, 중단/계속, 콘솔 입력, 텍스트 파일 읽기/쓰기, 기본 GUI 창·라벨·버튼. 함수, 배열, 모듈, 고급 GUI 위젯, 네트워크·데이터베이스 표준 라이브러리, 타입 시스템과 네이티브 기계어 컴파일은 후속 개발입니다.
 
-이 구현은 Python 런타임을 사용하지 않습니다. Rust로 빌드된 Orange 실행 파일만 있으면 Orange Code 프로그램을 실행할 수 있습니다.
+실행 파일은 Rust로 한 번 빌드해야 하지만, 빌드된 Orange Code 프로그램 실행에는 Python이 필요하지 않습니다.
