@@ -1,0 +1,46 @@
+{
+  "scopeName": "source.orange",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#functions" },
+    { "include": "#numbers" },
+    { "include": "#operators" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [{ "name": "comment.line.number-sign.orange", "match": "#.*$" }]
+    },
+    "strings": {
+      "name": "string.quoted.double.orange",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [{ "name": "constant.character.escape.orange", "match": "\\\\." }]
+    },
+    "keywords": {
+      "patterns": [{
+        "name": "keyword.control.orange",
+        "match": "만약|라면|아니면|반복하기|동안|각각|안에|함수|반환|변수|중단|계속"
+      }, {
+        "name": "constant.language.orange",
+        "match": "참|거짓"
+      }, {
+        "name": "keyword.operator.logical.orange",
+        "match": "그리고|또는|아니다"
+      }]
+    },
+    "functions": {
+      "patterns": [{
+        "name": "support.function.orange",
+        "match": "출력하기|입력하기|길이|문자열로|숫자로|정수로|절댓값|반올림|최대|최소|추가하기|삭제하기|포함하는가"
+      }]
+    },
+    "numbers": {
+      "patterns": [{ "name": "constant.numeric.orange", "match": "\\b[0-9]+(\\.[0-9]+)?\\b" }]
+    },
+    "operators": {
+      "patterns": [{ "name": "keyword.operator.orange", "match": "==|!=|<=|>=|=|\\+|\\-|\\*|/|%|<|>" }]
+    }
+  }
+}
