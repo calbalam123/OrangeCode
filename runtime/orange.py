@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Orange Code 2.3.0 - Korean aliases for Python."""
+"""Orange Code 2.4.0 - Korean aliases for Python."""
 from __future__ import annotations
 import argparse, builtins, io, re, sys, tokenize
 from pathlib import Path
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 NAME_MAP = {
 "만약":"if","아니면":"else","아니면만약":"elif","반복":"for","동안":"while","함수":"def","클래스":"class","반환":"return",
 "가져오기":"import","에서":"from","별칭":"as","시도":"try","예외":"except","마지막으로":"finally","발생":"raise","확인":"assert",
@@ -62,6 +62,8 @@ def translate(source):
         if line=="}":
             indent-=1
             if indent<0: raise SyntaxError(f"{no}행: 닫는 중괄호가 너무 많습니다.")
+            # Preserve source line numbers for VS Code debugging.
+            lines.append("")
             continue
         if line.startswith("} 아니면"):
             indent-=1
