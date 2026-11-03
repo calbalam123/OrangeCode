@@ -1,5 +1,5 @@
 use eframe::egui;
-use std::{collections::HashMap, env, fs, io::{self, Write}, path::PathBuf};
+use std::{collections::HashMap, env, fs, path::PathBuf};
 
 #[derive(Debug, Clone, PartialEq)]
 enum TokenKind { Ident, Number, String, Symbol, Eof }
@@ -194,7 +194,7 @@ impl Interpreter {
         }} Ok(())
     }
 }
-fn num_op(a:Value,b:Value,f:impl Fn(f64,f64)->f64)->Result<Value,String>{if let (Value::Number(x),Value::Number(y))=(a,b){if y==0.0 && f(1.0,y).is_infinite(){return Err("0으로 나눌 수 없습니다.".into())}Ok(Value::Number(f(x,y)))}else{Err("산술 연산에는 숫자를 사용하세요.".into())}}
+fn num_op(a:Value,b:Value,f:impl Fn(f64,f64)->f64)->Result<Value,String>{if let (Value::Number(x),Value::Number(y))=(a,b){if y==0.0 && (f(1.0,y).is_infinite() || f(1.0,y).is_nan()){return Err("0으로 나눌 수 없습니다.".into())}Ok(Value::Number(f(x,y)))}else{Err("산술 연산에는 숫자를 사용하세요.".into())}}
 
 struct OrangeGui { title:String,width:usize,height:usize,widgets:Vec<Widget>,interpreter:Interpreter }
 impl eframe::App for OrangeGui {
@@ -222,4 +222,40 @@ fn main(){
     if args.iter().any(|a|a=="--version"||a=="-V"){println!("Orange Code 2.0.0-native");return;}
     if args.is_empty(){println!("Orange Code 2.0.0 - 한국어 네이티브 프로그래밍 언어\n사용법: orange <파일.orange>");return;}
     if let Err(e)=run_file(PathBuf::from(&args[0])){eprintln!("[오렌지코드 오류] {e}");std::process::exit(1);}
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn lexer_recognizes_korean_keywords_and_strings() {
+        let tokens = lex("변수 이름 = \"오렌지\"").unwrap();
+        assert_eq!(tokens[0].text, "변수");
+        assert_eq!(tokens[1].text, "이름");
+        assert_eq!(tokens[3].text, "오렌지");
+    }
+
+    #[test]
+    fn parser_respects_arithmetic_precedence() {
+        let tokens = lex("변수 합계 = 5 + 2 * 3").unwrap();
+        let program = Parser::new(tokens).parse().unwrap();
+        let mut vm = Interpreter::default();
+        vm.execute(&program).unwrap();
+        assert_eq!(vm.vars.get("합계").unwrap().show(), "11");
+    }
+
+    #[test]
+    fn parser_accepts_if_else_and_repeat_blocks() {
+        let source = "변수 값 = 2\n만약 값 > 1 {\n출력하기(\"참\")\n} 아니면 {\n출력하기(\"거짓\")\n}\n반복하기 2번 {\n출력하기(\"반복\")\n}";
+        let program = Parser::new(lex(source).unwrap()).parse().unwrap();
+        assert_eq!(program.len(), 3);
+    }
+
+    #[test]
+    fn parser_accepts_korean_gui_syntax() {
+        let source = "창 만들기 \"테스트\" {\n너비 640\n높이 480\n글자 \"안녕\"\n버튼 \"확인\" 클릭하면 {\n출력하기(\"클릭\")\n}\n}";
+        let program = Parser::new(lex(source).unwrap()).parse().unwrap();
+        assert!(matches!(program.first(), Some(Stmt::Window(_, 640, 480, _))));
+    }
 }
