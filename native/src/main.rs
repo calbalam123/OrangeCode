@@ -1,5 +1,13 @@
 use eframe::egui;
-use std::{collections::HashMap, env, fs, io::{self, Write}, path::PathBuf};
+use std::{collections::HashMap, env, fs, io::{self, Write}, path::PathBuf, sync::Arc};
+
+#[cfg(windows)]
+fn setup_windows_console() {
+    use windows_sys::Win32::System::Console::{SetConsoleCP, SetConsoleOutputCP};
+    unsafe { SetConsoleCP(65001); SetConsoleOutputCP(65001); }
+}
+#[cfg(not(windows))]
+fn setup_windows_console() {}
 
 #[derive(Debug, Clone, PartialEq)]
 enum TokenKind { Ident, Number, String, Symbol, Eof }
@@ -202,13 +210,30 @@ impl Interpreter {
             Stmt::Repeat(e,b)=>{let count=self.eval(e)?;let n=if let Value::Number(v)=count{v.max(0.0).min(1_000_000.0) as usize}else{return Err("반복 횟수는 숫자여야 합니다.".into())};for _ in 0..n{self.execute(b)?;match self.signal.take(){Some(LoopSignal::Break)=>break,Some(LoopSignal::Continue)=>continue,None=>()}}},
             Stmt::Break=>self.signal=Some(LoopSignal::Break),
             Stmt::Continue=>self.signal=Some(LoopSignal::Continue),
-            Stmt::Window(title,w,h,widgets)=>{let app=OrangeGui{title:title.clone(),width:*w,height:*h,widgets:widgets.clone(),interpreter:self.clone()};let options=eframe::NativeOptions{viewport:egui::ViewportBuilder::default().with_inner_size([*w as f32,*h as f32]),..Default::default()};eframe::run_native(title,options,Box::new(|_|Ok(Box::new(app)))).map_err(|e|format!("GUI 실행 실패: {e}"))?;}
+            Stmt::Window(title,w,h,widgets)=>{let app=OrangeGui{title:title.clone(),width:*w,height:*h,widgets:widgets.clone(),interpreter:self.clone(),fonts_loaded:false};let options=eframe::NativeOptions{viewport:egui::ViewportBuilder::default().with_inner_size([*w as f32,*h as f32]),..Default::default()};eframe::run_native(title,options,Box::new(|_|Ok(Box::new(app)))).map_err(|e|format!("GUI 실행 실패: {e}"))?;}
         }} Ok(())
     }
 }
 fn num_op(a:Value,b:Value,f:impl Fn(f64,f64)->f64)->Result<Value,String>{if let (Value::Number(x),Value::Number(y))=(a,b){if y==0.0 && (f(1.0,y).is_infinite() || f(1.0,y).is_nan()){return Err("0으로 나눌 수 없습니다.".into())}Ok(Value::Number(f(x,y)))}else{Err("산술 연산에는 숫자를 사용하세요.".into())}}
 
-struct OrangeGui { title:String,width:usize,height:usize,widgets:Vec<Widget>,interpreter:Interpreter }
+struct OrangeGui { title:String,width:usize,height:usize,widgets:Vec<Widget>,interpreter:Interpreter,fonts_loaded:bool }
+
+fn install_korean_font(ctx:&egui::Context) {
+    let candidates = [
+        r"C:\\Windows\\Fonts\\malgun.ttf",
+        r"C:\\Windows\\Fonts\\gulim.ttc",
+        r"C:\\Windows\\Fonts\\batang.ttc",
+    ];
+    let bytes = candidates.iter().find_map(|path| fs::read(path).ok());
+    if let Some(bytes) = bytes {
+        let mut fonts = egui::FontDefinitions::default();
+        fonts.font_data.insert("orange_korean".to_owned(), Arc::new(egui::FontData::from_owned(bytes)));
+        for family in [egui::FontFamily::Proportional, egui::FontFamily::Monospace] {
+            fonts.families.entry(family).or_default().insert(0, "orange_korean".to_owned());
+        }
+        ctx.set_fonts(fonts);
+    }
+}
 impl eframe::App for OrangeGui {
     fn update(&mut self,ctx:&egui::Context,_frame:&mut eframe::Frame){
         egui::CentralPanel::default().show(ctx,|ui|{
