@@ -1,4 +1,4 @@
-# Orange Code 2.4.0
+# Orange Code 2.4.1
 
 Python의 문법과 표준 기능을 기반으로 한국어 키워드와 내장 함수 별칭을 제공하는 프로그래밍 언어입니다.
 
@@ -7,6 +7,9 @@ Python의 문법과 표준 기능을 기반으로 한국어 키워드와 내장 
 2. 가장 최근의 **Build VS Code extension** 실행을 선택합니다.
 3. 페이지 아래 **Artifacts**에서 `orange-code-vsix`를 다운로드합니다.
 4. 압축을 풀고 VS Code에서 `Ctrl+Shift+P` → `Extensions: Install from VSIX...` → `.vsix` 선택.
+
+## 한국어 인코딩
+`.orange` 파일은 UTF-8로 저장하세요. VS Code 확장은 UTF-8 편집·실행 환경을 기본 적용해 Windows에서도 한글 입출력을 지원합니다.
 
 ## 준비물
 - Python 3.10 이상
