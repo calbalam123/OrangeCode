@@ -1,4 +1,4 @@
-# Orange Code 2.3.0
+# Orange Code 2.4.0
 
 Python의 문법과 표준 기능을 기반으로 한국어 키워드와 내장 함수 별칭을 제공하는 프로그래밍 언어입니다.
 
@@ -54,6 +54,7 @@ python3 runtime/orange.py examples/hello.orange
 
 ## VS Code 명령
 - **Orange Code: Run File** — `.orange` 파일 실행
+- **Orange Code: 디버깅 시작** — F5로 변환된 Python 코드를 디버거에서 실행 (Python 및 Python Debugger 확장 필요)
 - **Orange Code: 파이썬 코드로 변환** — 같은 폴더에 `.py` 생성
 - **Orange Code: 새 파일 만들기** — 새 Orange Code 파일 생성
 
