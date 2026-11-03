@@ -77,6 +77,10 @@ def translate(source: str) -> str:
             line = "return " + convert_expression(line[3:])
         elif line == "반환":
             line = "return"
+        elif line == "중단":
+            line = "break"
+        elif line == "계속":
+            line = "continue"
         else:
             line = convert_expression(line)
 
