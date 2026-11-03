@@ -29,6 +29,11 @@ class OrangeCodeTests(unittest.TestCase):
         self.assertIn("for", code)
         self.assertIn("range", code)
 
+    def test_brace_translation_preserves_source_line_numbers(self):
+        source = '만약 참 라면 {\n출력("첫 줄")\n}\n출력("마지막 줄")'
+        translated = orange.translate(source)
+        self.assertEqual(len(source.splitlines()), len(translated.splitlines()))
+
     def test_python_style_indentation(self):
         code = orange.translate('만약 참:\n    출력("성공")\n아니면:\n    출력("실패")')
         self.assertIn("if True:", code)
