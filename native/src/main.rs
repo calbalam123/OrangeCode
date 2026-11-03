@@ -1,5 +1,5 @@
 use eframe::egui;
-use std::{collections::HashMap, env, fs, io::{self, Write}, path::PathBuf, sync::Arc};
+use std::{collections::HashMap, env, fs, io::{self, Write}, path::PathBuf};
 
 #[cfg(windows)]
 fn setup_windows_console() {
@@ -227,7 +227,7 @@ fn install_korean_font(ctx:&egui::Context) {
     let bytes = candidates.iter().find_map(|path| fs::read(path).ok());
     if let Some(bytes) = bytes {
         let mut fonts = egui::FontDefinitions::default();
-        fonts.font_data.insert("orange_korean".to_owned(), Arc::new(egui::FontData::from_owned(bytes)));
+        fonts.font_data.insert("orange_korean".to_owned(), egui::FontData::from_owned(bytes));
         for family in [egui::FontFamily::Proportional, egui::FontFamily::Monospace] {
             fonts.families.entry(family).or_default().insert(0, "orange_korean".to_owned());
         }
