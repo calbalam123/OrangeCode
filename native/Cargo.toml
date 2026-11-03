@@ -1,0 +1,13 @@
+[package]
+name = "orange-code"
+version = "2.0.0"
+edition = "2021"
+description = "Orange Code - Korean-first native programming language"
+license = "MIT"
+
+[[bin]]
+name = "orange"
+path = "src/main.rs"
+
+[dependencies]
+eframe = "0.29"
