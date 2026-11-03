@@ -1,0 +1,28 @@
+name: Build VS Code extension
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "vscode-extension/**"
+      - ".github/workflows/build-vsix.yml"
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install VSCE
+        run: npm install --global @vscode/vsce
+      - name: Package extension
+        working-directory: vscode-extension
+        run: vsce package
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: orange-code-vsix
+          path: vscode-extension/*.vsix
