@@ -1,0 +1,10 @@
+[General]
+Name=Mac Ventura
+ColorScheme=BreezeDark
+widgetStyle=Breeze
+
+[Icons]
+Theme=Papirus
+
+[KDE]
+LookAndFeelPackage=org.kde.breeze.desktop
