@@ -33,7 +33,7 @@ cp -a "$PROFILE_SRC/." "$PROFILE/"
 
 # 공식 부트 설정은 유지하고 Mac Ventura 패키지와 rootfs 오버레이를 추가합니다.
 cat "$ROOT/profile/packages.x86_64" >> "$PROFILE/packages.x86_64"
-cp -a "$ROOT/profile/airootfs/." "$PROFILE/"
+mkdir -p "$PROFILE/airootfs"\ncp -a "$ROOT/profile/airootfs/." "$PROFILE/airootfs/"
 
 # 라이브 세션의 시스템 계정 및 sudo 권한을 보장합니다.
 install -d -m 0755 "$PROFILE/airootfs/etc/sudoers.d"
