@@ -26,7 +26,8 @@ jobs:
             -v "$GITHUB_WORKSPACE:/workspace" \
             -w /workspace/MacVentura \
             archlinux:latest bash -euxo pipefail -c '
-              pacman -Sy --noconfirm archlinux-keyring
+              pacman-key --init
+              pacman-key --populate archlinux
               pacman -Syu --noconfirm --needed archiso python
               bash ./check-project.sh
               bash ./build-iso.sh
