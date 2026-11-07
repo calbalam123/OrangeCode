@@ -75,7 +75,7 @@ gimp
 file-roller
 unzip
 zip
-p7zip
+7zip
 fastfetch
 btop
 htop
