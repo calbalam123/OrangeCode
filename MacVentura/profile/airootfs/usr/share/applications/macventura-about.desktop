@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=About Mac Ventura
+Comment=Mac Ventura project information
+Exec=xdg-open file:///usr/share/doc/macventura/README
+Icon=help-about
+Terminal=false
+Categories=System;
