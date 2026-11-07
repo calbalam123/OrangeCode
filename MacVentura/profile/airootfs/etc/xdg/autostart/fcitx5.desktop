@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Fcitx 5
+Comment=Korean input method
+Exec=fcitx5 -d
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=1
+Terminal=false
