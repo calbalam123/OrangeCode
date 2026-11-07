@@ -1,0 +1,52 @@
+# Mac Ventura desktop and Korean language packages
+# The official releng package list is preserved and these are appended.
+
+# KDE Plasma desktop
+plasma-desktop
+plasma-workspace
+plasma-x11-session
+plasma-pa
+plasma-nm
+plasma-systemmonitor
+systemsettings
+dolphin
+konsole
+kate
+ark
+sddm
+breeze
+breeze-gtk
+xdg-desktop-portal-kde
+qt6-wayland
+
+# Network and hardware
+networkmanager
+network-manager-applet
+bluez
+bluez-utils
+cups
+avahi
+udisks2
+upower
+power-profiles-daemon
+
+# Korean locale, fonts, and input
+glibc
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+fcitx5
+fcitx5-configtool
+fcitx5-gtk
+fcitx5-qt
+fcitx5-hangul
+
+# Useful desktop applications
+firefox
+file-roller
+gwenview
+mpv
+nano
+vim
+git
+sudo
