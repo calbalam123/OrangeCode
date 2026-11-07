@@ -1,0 +1,5 @@
+LANG=ko_KR.UTF-8
+LC_MESSAGES=ko_KR.UTF-8
+GTK_IM_MODULE=fcitx
+QT_IM_MODULE=fcitx
+XMODIFIERS=@im=fcitx
