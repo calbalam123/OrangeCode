@@ -8,6 +8,10 @@ on:
       - ".github/workflows/macventura-iso.yml"
   workflow_dispatch:
 
+concurrency:
+  group: macventura-iso-build
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
