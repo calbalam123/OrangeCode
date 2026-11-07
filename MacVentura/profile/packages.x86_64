@@ -2,9 +2,10 @@
 # Appended to the official Archiso releng package set.
 
 # KDE Plasma desktop and settings
+xorg-server
+xorg-xwayland
 plasma-desktop
 plasma-workspace
-plasma-x11-session
 plasma-pa
 plasma-nm
 plasma-systemmonitor
