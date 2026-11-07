@@ -1,0 +1,44 @@
+name: Mac Ventura ISO Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "MacVentura/**"
+      - ".github/workflows/macventura-iso.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Arch Linux ISO
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build ISO in Arch Linux container
+        run: |
+          docker run --privileged --rm \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace/MacVentura \
+            archlinux:latest bash -euxo pipefail -c '
+              pacman -Sy --noconfirm archlinux-keyring
+              pacman -Syu --noconfirm --needed archiso python
+              bash ./check-project.sh
+              bash ./build-iso.sh
+              mkdir -p /workspace/artifacts
+              cp -v ./out/*.iso /workspace/artifacts/
+              sha256sum /workspace/artifacts/*.iso > /workspace/artifacts/SHA256SUMS
+            '
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macventura-iso
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 14
